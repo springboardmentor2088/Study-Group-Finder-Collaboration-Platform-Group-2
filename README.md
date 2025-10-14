@@ -1,6 +1,4 @@
-Absolutely! I’ve taken all the details you provided earlier and combined them into a **full, polished README** with the tech badges, proper headings, completed/in-progress statuses, and structured for clarity. You can paste this directly into your project’s `README.md`.
 
-````markdown
 # Study Group Finder & Collaboration Platform
 
 [![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
