@@ -56,7 +56,6 @@ The **Study Group Finder & Collaboration Platform** is a modern, full-stack web 
 
 ### Frontend
 - React 18
-- TypeScript
 - Vite
 - Tailwind CSS
 - React Router
@@ -146,7 +145,7 @@ cloudinary.api-secret=YOUR_API_SECRET
 
 ### Frontend
 
-Edit `frontend/src/services/api.ts`:
+Edit `frontend/src/app.js`:
 
 ```ts
 const API_BASE_URL = 'http://localhost:8080/';
@@ -251,9 +250,4 @@ MIT License
 * Cloudinary
 * Open-source contributors
 
-```
-
----
-
-If you want, I can **also create a “Team & Members” section with all member names, email, roles, and responsibilities** at the top of this README with badges to make it **even more professional**.  
 ```
