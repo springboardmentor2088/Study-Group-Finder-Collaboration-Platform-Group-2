@@ -2,7 +2,6 @@
 # Study Group Finder & Collaboration Platform
 
 [![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring&logoColor=white)](https://spring.io/projects/spring-boot)
 [![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.java.com/)
@@ -14,6 +13,12 @@ The **Study Group Finder & Collaboration Platform** is a modern, full-stack web 
 
 ---
 
+## Team Members
+- **Vamsidhar Reddy** – Frontend & Backend Developer  
+- **[Mahita]** – Frontend Developer  
+- **[Rahul]** –  Frontend Developer 
+- **[Santosh]** – Backend Developer
+    
 ## ✨ Features
 
 ### ✅ Completed
