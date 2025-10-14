@@ -71,6 +71,7 @@ The **Study Group Finder & Collaboration Platform** is a modern, full-stack web 
 - Lombok
 - SpringDoc OpenAPI (Swagger)
 
+
 ### Third-Party Services
 - Cloudinary (image storage)
 - Gmail SMTP (email notifications)
@@ -91,7 +92,7 @@ The **Study Group Finder & Collaboration Platform** is a modern, full-stack web 
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/mohammadsarfarazafzal/study-group-finder-and-collaboration-platform.git
+git clone https://github.com/ChinthaVamsidharReddy/Study-Group-Finder-Collaboration-Platform-Group-2.git
 cd study-group-finder-and-collaboration-platform
 ````
 
@@ -148,7 +149,7 @@ cloudinary.api-secret=YOUR_API_SECRET
 Edit `frontend/src/services/api.ts`:
 
 ```ts
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = 'http://localhost:8080/';
 ```
 
 ---
@@ -179,36 +180,36 @@ npm run dev
 
 ### Authentication
 
-* `POST /api/auth/register`
-* `POST /api/auth/login`
-* `POST /api/auth/forgot-password`
-* `POST /api/auth/reset-password`
-* `POST /api/auth/update-password`
+* `POST /auth/register`
+* `POST /auth/login`
+* `POST /auth/forgot-password`
+* `POST /auth/reset-password`
+* `POST /auth/update-password`
 
 ### User Profile
 
-* `GET /api/user/profile`
-* `PUT /api/user/profile`
-* `POST /api/user/upload-avatar`
-* `DELETE /api/user/remove-avatar`
+* `GET /user/profile`
+* `PUT /user/profile`
+* `POST /user/upload-avatar`
+* `DELETE /user/remove-avatar`
 
 ### Courses
 
-* `GET /api/courses` – List all courses
-* `GET /api/courses/my-courses` – Enrolled courses
-* `POST /api/courses/{courseId}/enroll`
-* `DELETE /api/courses/{courseId}/unenroll`
-* `GET /api/courses/{userId}/peers` – Suggested peers
+* `GET /courses` – List all courses
+* `GET /courses/my-courses` – Enrolled courses
+* `POST /courses/{courseId}/enroll`
+* `DELETE /courses/{courseId}/unenroll`
+* `GET /courses/{userId}/peers` – Suggested peers
 
 ### Study Groups
 
-* `GET /api/groups/created/{userId}`
-* `GET /api/groups/joined/{userId}`
-* `GET /api/groups/available/{userId}`
-* `POST /api/groups/create`
-* `POST /api/groups/join`
-* `PUT /api/groups/approve/{memberId}`
-* `DELETE /api/groups/leave/{groupId}`
+* `GET /groups/created/{userId}`
+* `GET /groups/joined/{userId}`
+* `GET /groups/available/{userId}`
+* `POST /groups/create`
+* `POST /groups/join`
+* `PUT /groups/approve/{memberId}`
+* `DELETE /groups/leave/{groupId}`
 
 ---
 
@@ -229,9 +230,8 @@ study-group-finder/
 │   ├── src/components/
 │   ├── src/contexts/
 │   ├── src/pages/
-│   ├── src/services/
-│   ├── App.tsx
-│   └── main.tsx
+│   ├── App.js
+│   └── main.js
 └── README.md
 ```
 
@@ -256,6 +256,4 @@ MIT License
 ---
 
 If you want, I can **also create a “Team & Members” section with all member names, email, roles, and responsibilities** at the top of this README with badges to make it **even more professional**.  
-
-Do you want me to add that as well?
 ```
