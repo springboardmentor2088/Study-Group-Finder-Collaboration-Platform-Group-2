@@ -14,10 +14,10 @@ The **Study Group Finder & Collaboration Platform** is a modern, full-stack web 
 ---
 
 ## Team Members
-- **Vamsidhar Reddy** – Frontend & Backend Developer  
-- **[Mahita]** – Frontend Developer  
-- **[Rahul]** –  Frontend Developer 
-- **[Santosh]** – Backend Developer
+- **Vamsidhar Reddy** – Frontend & Backend Developer
+- **Rahul** –  Frontend Developer
+- **Mahita** – Frontend Developer  
+- **Santosh** – Backend Developer
     
 ## ✨ Features
 
