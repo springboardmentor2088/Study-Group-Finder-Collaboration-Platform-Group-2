@@ -1,190 +1,135 @@
-Study Group Finder & Collaboration Platform
+Absolutely! I’ve taken all the details you provided earlier and combined them into a **full, polished README** with the tech badges, proper headings, completed/in-progress statuses, and structured for clarity. You can paste this directly into your project’s `README.md`.
+
+````markdown
+# Study Group Finder & Collaboration Platform
+
+[![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring&logoColor=white)](https://spring.io/projects/spring-boot)
+[![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.java.com/)
+
+---
+
+## 🎯 Project Statement
+The **Study Group Finder & Collaboration Platform** is a modern, full-stack web application designed to help students connect with peers in the same courses to form effective study groups. Users can create profiles, list their enrolled courses, discover classmates, and collaborate using built-in communication and productivity tools. This platform enhances academic networking, improves study efficiency, and simplifies group work coordination.
+
+---
+
+## ✨ Features
+
+### ✅ Completed
+- **Authentication & Security**
+  - JWT-based login/registration
+  - Password hashing and security with Spring Security
+  - Email-based password reset
+  - Session management (Remember Me)
+- **User Profile Management**
+  - Full profile creation with academic details
+  - Avatar upload (via Cloudinary)
+  - University, degree, and personal bio
+- **Course Management**
+  - Browse and search courses
+  - Enroll/unenroll in courses
+  - Track peers in courses
+- **Dashboard**
+  - Display enrolled courses
+  - Joined study groups count
+  - Suggested peers count
+
+### 🚧 In Progress
+- **Study Groups**
+  - Create and manage public/private groups
+  - Join group requests and approvals
+  - Member management
+  - Group discovery and filtering
+- **Communication**
+  - Real-time chat
+  - Group messaging
+  - Direct messaging
+- **Calendar & Scheduling**
+  - Schedule study sessions
+  - Event reminders (email/push notifications)
+  - Group calendar integration
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- React 18
+- TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- Lucide React (Icons)
+
+### Backend
+- Spring Boot 3.5.6
+- Spring Security
+- Spring Data JPA
+- MySQL 8
+- JWT Authentication
+- Lombok
+- SpringDoc OpenAPI (Swagger)
+
+### Third-Party Services
+- Cloudinary (image storage)
+- Gmail SMTP (email notifications)
+
+---
+
+## 📦 Prerequisites
+- Java 17+
+- Node.js 18.x+
+- npm
+- MySQL 8+
+- Maven 3.8+
+- Git
+
+---
+
+## 🚀 Installation
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/mohammadsarfarazafzal/study-group-finder-and-collaboration-platform.git
+cd study-group-finder-and-collaboration-platform
+````
+
+### 2. Database Setup
+
+Create MySQL database:
 
-React | TypeScript | Spring Boot | MySQL | Java
-
-A modern, full-stack web application that connects students enrolled in the same courses to form effective study groups. This platform allows users to create profiles, discover peers, form groups, communicate in real-time, and manage academic schedules efficiently.
-
-🎯 Project Objective
-
-Students often face challenges in collaborating effectively:
-
-Finding peers for the same courses
-
-Coordinating study sessions
-
-Sharing resources and communicating in real-time
-
-Tracking group activities and schedules
-
-This platform addresses these challenges by providing an integrated environment for academic collaboration and peer networking.
-
-👥 Team Members
-Name	Role
-Vamsidhar Reddy	Full-Stack Developer
-[Other Team Member 1]	Backend Developer
-[Other Team Member 2]	Frontend Developer
-[Other Team Member 3]	UI/UX Designer
-
-(Replace placeholders with actual names and roles)
-
-📋 Features
-✅ Completed
-
-Authentication & Security
-
-JWT-based authentication
-
-Secure password hashing
-
-Email-based password reset
-
-Session management (Remember Me)
-
-User Profile Management
-
-Full profile creation with academic details
-
-Avatar upload using Cloudinary
-
-Bio and personal info management
-
-Course Management
-
-Browse, search, enroll/unenroll in courses
-
-View enrolled courses
-
-Track course peers
-
-Peer Discovery
-
-Find peers enrolled in the same courses
-
-Filter and search peers
-
-Study Groups
-
-Create and join public/private groups
-
-View group members
-
-🚧 In Progress
-
-Communication
-
-Real-time group chat (WebSockets)
-
-Direct messaging
-
-Calendar & Scheduling
-
-Schedule study sessions
-
-Event creation and reminders
-
-Group calendar integration
-
-🏗️ Milestones
-Milestone 1: Authentication & Course Management ✅ Completed
-
-User registration/login with JWT
-
-Profile setup and editing
-
-Enroll/unenroll in courses
-
-Dashboard with joined groups and suggested peers
-
-Milestone 2: Group Creation & Discovery ✅ Completed
-
-Create groups with privacy settings
-
-Search/filter groups
-
-Join public/private groups
-
-View group member list
-
-Milestone 3: Communication & Collaboration ⏳ In Progress
-
-Real-time chat (WebSockets)
-
-Collaborative document editing
-
-Milestone 4: Scheduling & Notifications ⏳ In Progress
-
-Schedule study sessions
-
-Email/push notifications for events
-
-Calendar widget
-
-🛠️ Tech Stack
-
-Frontend
-
-React 18, TypeScript, Tailwind CSS
-
-Vite (Build Tool), React Router
-
-Lucide React (Icons)
-
-Backend
-
-Spring Boot 3.5.6, Spring Security
-
-Spring Data JPA, JWT for authentication
-
-MySQL 8, Lombok, SpringDoc OpenAPI
-
-Third-Party Services
-
-Cloudinary (Avatar uploads)
-
-Gmail SMTP (Notifications)
-
-📦 Prerequisites
-
-Java 17+
-
-Node.js 18+ and npm
-
-MySQL 8+
-
-Maven 3.8+
-
-Git
-
-🚀 Installation
-1. Clone Repository
-git clone https://github.com/your-username/study-group-finder.git
-cd study-group-finder
-
-2. Database Setup
+```sql
 CREATE DATABASE studygroup;
+```
 
+> The application will automatically create tables on first run.
 
-The application will create required tables on first run.
+### 3. Backend Setup
 
-3. Backend Setup
+```bash
 cd backend
-mvn clean install
-mvn spring-boot:run
+mvn clean install -DskipTests
+```
 
+### 4. Frontend Setup
 
-Server runs at http://localhost:8080
-
-4. Frontend Setup
+```bash
 cd frontend
 npm install
-npm run dev
+```
 
+---
 
-Frontend runs at http://localhost:5173
+## ⚙️ Configuration
 
-⚙️ Configuration
-Backend (application.properties)
+### Backend (`application.properties`)
+
+```properties
 server.port=8080
+
 spring.datasource.url=jdbc:mysql://localhost:3306/studygroup?useSSL=false&serverTimezone=UTC
 spring.datasource.username=YOUR_MYSQL_USERNAME
 spring.datasource.password=YOUR_MYSQL_PASSWORD
@@ -198,69 +143,121 @@ spring.mail.password=YOUR_APP_PASSWORD
 cloudinary.cloud-name=YOUR_CLOUD_NAME
 cloudinary.api-key=YOUR_API_KEY
 cloudinary.api-secret=YOUR_API_SECRET
+```
 
-Frontend (api.ts)
+### Frontend
+
+Edit `frontend/src/services/api.ts`:
+
+```ts
 const API_BASE_URL = 'http://localhost:8080/api';
+```
 
-📚 API Documentation
+---
 
-Access Swagger UI:
+## 🚀 Running the Application
 
-http://localhost:8080/swagger-ui.html
+### Start Backend
 
+```bash
+cd backend
+mvn spring-boot:run
+```
 
-Key Endpoints
+### Start Frontend
 
-Auth: /api/auth/register, /api/auth/login, /api/auth/forgot-password
+```bash
+cd frontend
+npm run dev
+```
 
-User Profile: /api/user/profile
+### Access the App
 
-Courses: /api/courses, /api/courses/my-courses, /api/courses/peers
+[Frontend](http://localhost:5173) | [Swagger Docs](http://localhost:8080/swagger-ui.html)
 
-Groups: /api/groups/created/{userId}, /api/groups/joined/{userId}, /api/groups/available/{userId}
+---
 
-📁 Project Structure
+## 📚 API Endpoints (Highlights)
+
+### Authentication
+
+* `POST /api/auth/register`
+* `POST /api/auth/login`
+* `POST /api/auth/forgot-password`
+* `POST /api/auth/reset-password`
+* `POST /api/auth/update-password`
+
+### User Profile
+
+* `GET /api/user/profile`
+* `PUT /api/user/profile`
+* `POST /api/user/upload-avatar`
+* `DELETE /api/user/remove-avatar`
+
+### Courses
+
+* `GET /api/courses` – List all courses
+* `GET /api/courses/my-courses` – Enrolled courses
+* `POST /api/courses/{courseId}/enroll`
+* `DELETE /api/courses/{courseId}/unenroll`
+* `GET /api/courses/{userId}/peers` – Suggested peers
+
+### Study Groups
+
+* `GET /api/groups/created/{userId}`
+* `GET /api/groups/joined/{userId}`
+* `GET /api/groups/available/{userId}`
+* `POST /api/groups/create`
+* `POST /api/groups/join`
+* `PUT /api/groups/approve/{memberId}`
+* `DELETE /api/groups/leave/{groupId}`
+
+---
+
+## 📁 Project Structure
+
+```
 study-group-finder/
-├── backend/  # Spring Boot backend
-├── frontend/ # React + TypeScript frontend
+├── backend/
+│   ├── src/main/java/com/studygroup/backend/
+│   │   ├── config/
+│   │   ├── controller/
+│   │   ├── entity/
+│   │   ├── repository/
+│   │   └── service/
+│   └── resources/application.properties
+├── frontend/
+│   ├── public/
+│   ├── src/components/
+│   ├── src/contexts/
+│   ├── src/pages/
+│   ├── src/services/
+│   ├── App.tsx
+│   └── main.tsx
 └── README.md
+```
 
-🔒 Security
+---
 
-Password encryption with BCrypt
+## 📝 License
 
-JWT-based authentication
+MIT License
 
-CORS configured for frontend-backend
+---
 
-Secure file uploads
+## 🙌 Acknowledgments
 
-Email verification for password reset
+* React & React Router
+* Tailwind CSS
+* Spring Boot Documentation
+* Cloudinary
+* Open-source contributors
 
-📈 Future Enhancements
+```
 
-Fully functional collaborative document editing
+---
 
-Advanced real-time notifications and reminders
+If you want, I can **also create a “Team & Members” section with all member names, email, roles, and responsibilities** at the top of this README with badges to make it **even more professional**.  
 
-Mobile-friendly responsive design
-
-Enhanced analytics for study group participation
-
-📝 License
-
-MIT License. See LICENSE file for details.
-
-🙌 Acknowledgments
-
-Spring Boot & Spring Security documentation
-
-React & TypeScript documentation
-
-Tailwind CSS
-
-Cloudinary
-
-Open-source contributors
-
-I can also make it even more visually attractive using badges for “Completed ✅”, “In Progress ⏳”, and “Planned 🚀” and add project screenshots if you want.
+Do you want me to add that as well?
+```
