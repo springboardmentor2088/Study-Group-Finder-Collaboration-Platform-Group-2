@@ -1,131 +1,266 @@
-# Study Group Finder & Collaboration Platform
+Study Group Finder & Collaboration Platform
 
-## Project Overview
-The **Study Group Finder & Collaboration Platform** is a web application designed to help students connect with peers enrolled in the same courses to form effective study groups. Users can create profiles, list their enrolled courses, discover classmates, and collaborate through integrated communication and productivity tools.  
+React | TypeScript | Spring Boot | MySQL | Java
 
-This system enhances academic networking, improves study efficiency, and makes group work coordination seamless.
+A modern, full-stack web application that connects students enrolled in the same courses to form effective study groups. This platform allows users to create profiles, discover peers, form groups, communicate in real-time, and manage academic schedules efficiently.
 
----
+🎯 Project Objective
 
-## Team Members
-- **Vamsidhar Reddy** – Frontend & Backend Developer  
-- **[Team Member 2 Name]** – Frontend Developer  
-- **[Team Member 3 Name]** – Backend Developer  
-- **[Team Member 4 Name]** – QA & Documentation  
+Students often face challenges in collaborating effectively:
 
-*(Replace placeholders with actual team members’ names.)*
+Finding peers for the same courses
 
----
+Coordinating study sessions
 
-## Project Objectives
-- Enable students to connect with peers taking the same courses.
-- Facilitate the creation and management of study groups.
-- Provide real-time communication and collaborative tools.
-- Improve academic networking and study efficiency.
+Sharing resources and communicating in real-time
 
----
+Tracking group activities and schedules
 
-## Modules
-### Module A: User Authentication & Course Management
-- User registration/login with JWT authentication.
-- Profile setup with name, academic details, and avatar upload.
-- Add/remove enrolled courses from a predefined list.
-- Dashboard displaying joined groups and suggested peers.
+This platform addresses these challenges by providing an integrated environment for academic collaboration and peer networking.
 
-### Module B: Group Creation, Discovery & Membership
-- Create study groups with name, description, course association, and privacy settings.
-- Search and filter groups by course, size, or activity.
-- Request to join private groups or instantly join public groups.
-- View group member list.
+👥 Team Members
+Name	Role
+Vamsidhar Reddy	Full-Stack Developer
+[Other Team Member 1]	Backend Developer
+[Other Team Member 2]	Frontend Developer
+[Other Team Member 3]	UI/UX Designer
 
-### Module C: Communication & Collaboration
-- Real-time group chat using WebSockets.
-- Shared document editing within groups.
+(Replace placeholders with actual names and roles)
 
-### Module D: Scheduling & Notifications
-- Group calendar for scheduling study sessions.
-- Create sessions with title, description, date, and time.
-- Email/push notifications for session reminders.
+📋 Features
+✅ Completed
 
----
+Authentication & Security
 
-## Milestones
+JWT-based authentication
 
-### Milestone 1: Week 1–2 — Authentication & Course Management
-- Implement JWT-based login/registration.
-- Profile setup and editing.
-- Add/remove enrolled courses.
-- Display dashboard with joined groups and suggested peers.
+Secure password hashing
 
-**Outcomes:**
-- Login & registration forms.
-- Profile editing form.
-- Dashboard page.
+Email-based password reset
 
-### Milestone 2: Week 3–4 — Group Creation & Discovery
-- Create study groups with course association and privacy options.
-- Search and filter groups.
-- Join private groups via request or public groups instantly.
-- View group member list.
+Session management (Remember Me)
 
-**Outcomes:**
-- Create group form.
-- Search/filter groups.
+User Profile Management
 
-### Milestone 3: Week 5–6 — Communication & Collaboration
-- Real-time group chat using WebSockets.
-- Collaborative document editing.
+Full profile creation with academic details
 
-**Outcomes:**
-- Chat page.
-- Messaging widget.
+Avatar upload using Cloudinary
 
-### Milestone 4: Week 7–8 — Scheduling & Notifications
-- Group calendar for study sessions.
-- Session creation with title, description, date, and time.
-- Email/push notifications.
+Bio and personal info management
 
-**Outcomes:**
-- Calendar widget.
-- Event creation form.
-- Notification option.
+Course Management
 
----
+Browse, search, enroll/unenroll in courses
 
-## Key Features
-- **User Profiles:** Academic details, avatar, enrolled courses.
-- **Group Discovery:** Search and join study groups by course or activity.
-- **Real-time Chat:** Instant messaging within groups.
-- **Collaboration Tools:** Shared notes or documents.
-- **Event Scheduling:** Plan study sessions with notifications.
-- **Dashboard:** Overview of courses, groups, and peers.
+View enrolled courses
 
----
+Track course peers
 
-## Technologies Used
-- **Frontend:** React.js, Tailwind CSS
-- **Backend:** Spring Boot, Hibernate, JPA
-- **Database:** MySQL
-- **Authentication:** JWT
-- **Real-time Communication:** WebSockets
-- **Notifications:** Email and push notifications
+Peer Discovery
 
----
+Find peers enrolled in the same courses
 
-## How to Clone & Run the Project
+Filter and search peers
 
-```bash
-# Clone the repository
-git clone https://github.com/<your-username>/<repo-name>.git
+Study Groups
 
-# Navigate into the project directory
-cd <repo-name>
+Create and join public/private groups
 
-# Backend: install dependencies and run
+View group members
+
+🚧 In Progress
+
+Communication
+
+Real-time group chat (WebSockets)
+
+Direct messaging
+
+Calendar & Scheduling
+
+Schedule study sessions
+
+Event creation and reminders
+
+Group calendar integration
+
+🏗️ Milestones
+Milestone 1: Authentication & Course Management ✅ Completed
+
+User registration/login with JWT
+
+Profile setup and editing
+
+Enroll/unenroll in courses
+
+Dashboard with joined groups and suggested peers
+
+Milestone 2: Group Creation & Discovery ✅ Completed
+
+Create groups with privacy settings
+
+Search/filter groups
+
+Join public/private groups
+
+View group member list
+
+Milestone 3: Communication & Collaboration ⏳ In Progress
+
+Real-time chat (WebSockets)
+
+Collaborative document editing
+
+Milestone 4: Scheduling & Notifications ⏳ In Progress
+
+Schedule study sessions
+
+Email/push notifications for events
+
+Calendar widget
+
+🛠️ Tech Stack
+
+Frontend
+
+React 18, TypeScript, Tailwind CSS
+
+Vite (Build Tool), React Router
+
+Lucide React (Icons)
+
+Backend
+
+Spring Boot 3.5.6, Spring Security
+
+Spring Data JPA, JWT for authentication
+
+MySQL 8, Lombok, SpringDoc OpenAPI
+
+Third-Party Services
+
+Cloudinary (Avatar uploads)
+
+Gmail SMTP (Notifications)
+
+📦 Prerequisites
+
+Java 17+
+
+Node.js 18+ and npm
+
+MySQL 8+
+
+Maven 3.8+
+
+Git
+
+🚀 Installation
+1. Clone Repository
+git clone https://github.com/your-username/study-group-finder.git
+cd study-group-finder
+
+2. Database Setup
+CREATE DATABASE studygroup;
+
+
+The application will create required tables on first run.
+
+3. Backend Setup
 cd backend
-./mvnw spring-boot:run
+mvn clean install
+mvn spring-boot:run
 
-# Frontend: install dependencies and start
-cd ../frontend
+
+Server runs at http://localhost:8080
+
+4. Frontend Setup
+cd frontend
 npm install
-npm start
+npm run dev
+
+
+Frontend runs at http://localhost:5173
+
+⚙️ Configuration
+Backend (application.properties)
+server.port=8080
+spring.datasource.url=jdbc:mysql://localhost:3306/studygroup?useSSL=false&serverTimezone=UTC
+spring.datasource.username=YOUR_MYSQL_USERNAME
+spring.datasource.password=YOUR_MYSQL_PASSWORD
+
+jwt.secret=YOUR_JWT_SECRET_KEY
+jwt.expiration=86400000
+
+spring.mail.username=YOUR_EMAIL@gmail.com
+spring.mail.password=YOUR_APP_PASSWORD
+
+cloudinary.cloud-name=YOUR_CLOUD_NAME
+cloudinary.api-key=YOUR_API_KEY
+cloudinary.api-secret=YOUR_API_SECRET
+
+Frontend (api.ts)
+const API_BASE_URL = 'http://localhost:8080/api';
+
+📚 API Documentation
+
+Access Swagger UI:
+
+http://localhost:8080/swagger-ui.html
+
+
+Key Endpoints
+
+Auth: /api/auth/register, /api/auth/login, /api/auth/forgot-password
+
+User Profile: /api/user/profile
+
+Courses: /api/courses, /api/courses/my-courses, /api/courses/peers
+
+Groups: /api/groups/created/{userId}, /api/groups/joined/{userId}, /api/groups/available/{userId}
+
+📁 Project Structure
+study-group-finder/
+├── backend/  # Spring Boot backend
+├── frontend/ # React + TypeScript frontend
+└── README.md
+
+🔒 Security
+
+Password encryption with BCrypt
+
+JWT-based authentication
+
+CORS configured for frontend-backend
+
+Secure file uploads
+
+Email verification for password reset
+
+📈 Future Enhancements
+
+Fully functional collaborative document editing
+
+Advanced real-time notifications and reminders
+
+Mobile-friendly responsive design
+
+Enhanced analytics for study group participation
+
+📝 License
+
+MIT License. See LICENSE file for details.
+
+🙌 Acknowledgments
+
+Spring Boot & Spring Security documentation
+
+React & TypeScript documentation
+
+Tailwind CSS
+
+Cloudinary
+
+Open-source contributors
+
+I can also make it even more visually attractive using badges for “Completed ✅”, “In Progress ⏳”, and “Planned 🚀” and add project screenshots if you want.
