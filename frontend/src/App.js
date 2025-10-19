@@ -10,6 +10,11 @@ import Profile from './components/profile/Profile';
 import Navbar from './components/common/Navbar';
 import { CoursesProvider } from './contexts/CoursesContext';
 import ForgotPassword from './components/ForgotPassword/ForgotPassword';
+import GroupChat from "./components/dashboard/GroupChat";
+import StudyGroups from './components/dashboard/StudyGroups';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 // Protected Route Component
@@ -46,6 +51,18 @@ function AppContent() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
+        {/* Toast Container for global popups */}
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={true}
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="colored"
+        />
+
         <Routes>
           <Route 
             path="/login" 
@@ -72,6 +89,8 @@ function AppContent() {
               </ProtectedRoute>
             } 
           />
+          <Route path="/study-groups" element={<Navigate to="/dashboard" />} />
+          <Route path="/group-chat/:groupId" element={<GroupChat />} />
           <Route 
             path="/profile" 
             element={
@@ -89,6 +108,7 @@ function AppContent() {
   );
 }
 
+
 function App() {
   return (
     <ThemeProvider>
@@ -98,6 +118,7 @@ function App() {
         </CoursesProvider>
       </AuthProvider>
     </ThemeProvider>
+    
   );
 }
 
