@@ -4,10 +4,11 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ChatProvider } from './contexts/ChatContext';
 import { CourseGroupProvider } from './contexts/CourseGroupContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 import { useAuth } from './contexts/AuthContext';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
-import DemoLogin from './components/DemoLogin';
+// import DemoLogin from './components/DemoLogin';
 import Dashboard from './components/dashboard/Dashboard';
 import Profile from './components/profile/Profile';
 import Navbar from './components/common/Navbar';
@@ -52,6 +53,9 @@ const PublicRoute = ({ children }) => {
 function AppContent() {
   const location = useLocation();
   const isChatPage = location.pathname.startsWith("/chat/");
+  const isLoginPage=location.pathname.startsWith("/login");
+  const isRegister=location.pathname.startsWith("/register");
+  const isForgetpassword=location.pathname.startsWith("/forgot-password")
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -68,14 +72,14 @@ function AppContent() {
       />
 
       <Routes>
-        <Route 
+        {/* <Route 
           path="/demo-login" 
           element={
             <PublicRoute>
               <DemoLogin />
             </PublicRoute>
           } 
-        />
+        /> */}
         <Route 
           path="/login" 
           element={
@@ -123,7 +127,7 @@ function AppContent() {
       </Routes>
 
       {/* Only show MessagingWidget when not on chat page */}
-      {!isChatPage && <MessagingWidget />}
+      {!isChatPage &&!isForgetpassword && !isRegister && !isLoginPage && <MessagingWidget />}
     </div>
   );
 }
@@ -132,15 +136,17 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <CourseGroupProvider>
-          <ChatProvider>
-            <CoursesProvider>
-              <Router>
-                <AppContent />
-              </Router>
-            </CoursesProvider>
-          </ChatProvider>
-        </CourseGroupProvider>
+        <NotificationProvider>
+          <CourseGroupProvider>
+            <ChatProvider>
+              <CoursesProvider>
+                <Router>
+                  <AppContent />
+                </Router>
+              </CoursesProvider>
+            </ChatProvider>
+          </CourseGroupProvider>
+        </NotificationProvider>
       </AuthProvider>
     </ThemeProvider>
   );

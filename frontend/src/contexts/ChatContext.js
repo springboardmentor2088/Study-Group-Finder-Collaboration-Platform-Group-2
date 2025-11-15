@@ -22,20 +22,31 @@ export const ChatProvider = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState({});
 
   const stompRef = useRef(null);
-  const subscriptionsRef = useRef({});
+  const subscriptionsRef = useRef(new Map());
+  const subscriptionCountsRef = useRef(new Map());
   const messageQueueRef = useRef([]);
   const subQueueRef = useRef(new Set());
   const typingTimeoutRef = useRef({});
   const deliveredAckedRef = useRef(new Set());
   const readAckedRef = useRef(new Set());
+  const activeGroupRef = useRef(null);
+  const connectingRef = useRef(false);
 
   const SOCKJS_URL =
     process.env.REACT_APP_WS_URL || "http://localhost:8080/ws/chat";
 
   /* ---------------------- STOMP Connection ---------------------- */
+  const normalizeGroupId = (value) => {
+    if (value === null || value === undefined || value === "") return null;
+    return String(value);
+  };
+
   const connectStomp = () => {
     if (stompRef.current && stompRef.current.connected) {
       console.log("[chat] STOMP already connected - reuse");
+      return;
+    }
+    if (connectingRef.current) {
       return;
     }
 
@@ -56,12 +67,22 @@ export const ChatProvider = ({ children }) => {
 
     client.onConnect = (frame) => {
       console.log("[chat] ✅ STOMP connected:", frame?.headers);
+      connectingRef.current = false;
       stompRef.current = client;
       setConnected(true);
 
-      // Resubscribe to queued groups
+      // Ensure any requested group subscriptions are active
+      subscriptionCountsRef.current.forEach((count, gId) => {
+        if (count > 0) {
+          _subscribeToGroup(gId, { ensureOnly: true });
+        }
+      });
+
+      // Resubscribe to any queued groups that were requested while disconnected
       if (subQueueRef.current.size > 0) {
-        subQueueRef.current.forEach((gId) => _subscribeToGroup(gId));
+        subQueueRef.current.forEach((gId) =>
+          _subscribeToGroup(gId, { ensureOnly: true })
+        );
         subQueueRef.current.clear();
       }
 
@@ -78,12 +99,21 @@ export const ChatProvider = ({ children }) => {
       }
     };
 
-    client.onWebSocketClose = () => setConnected(false);
-    client.onDisconnect = () => setConnected(false);
+    client.onWebSocketClose = () => {
+      setConnected(false);
+      connectingRef.current = false;
+      subscriptionsRef.current.clear();
+    };
+    client.onDisconnect = () => {
+      setConnected(false);
+      connectingRef.current = false;
+      subscriptionsRef.current.clear();
+    };
     client.onStompError = (frame) =>
       console.error("[chat] ❌ Broker error:", frame?.headers?.message || frame);
 
     stompRef.current = client;
+    connectingRef.current = true;
     client.activate();
   };
 
@@ -113,24 +143,32 @@ export const ChatProvider = ({ children }) => {
     return () => {
       const client = stompRef.current;
       if (client) {
-        Object.values(subscriptionsRef.current).forEach((sub) =>
-          sub.unsubscribe?.()
-        );
-        subscriptionsRef.current = {};
+        subscriptionsRef.current.forEach((subs) => {
+          subs?.groupSub?.unsubscribe?.();
+          subs?.chatSub?.unsubscribe?.();
+        });
+        subscriptionsRef.current.clear();
+        subscriptionCountsRef.current.clear();
         if (client.active) client.deactivate();
       }
       stompRef.current = null;
       setConnected(false);
+      connectingRef.current = false;
+      activeGroupRef.current = null;
+      setActiveGroup(null);
       messageQueueRef.current = [];
       subQueueRef.current.clear();
       window.removeEventListener("chat:readReceipt", onReadReceipt);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   /* ---------------------- Helper: Add Message ---------------------- */
   const addMessage = (groupId, msg) => {
+    const normalizedId = normalizeGroupId(groupId);
+    if (!normalizedId) return;
     setMessages((prev) => {
-      const arr = Array.isArray(prev[groupId]) ? [...prev[groupId]] : [];
+      const arr = Array.isArray(prev[normalizedId]) ? [...prev[normalizedId]] : [];
 
       const exists = arr.some(
         (m) =>
@@ -142,51 +180,87 @@ export const ChatProvider = ({ children }) => {
       if (exists) return prev;
 
       arr.push(msg);
-      return { ...prev, [groupId]: arr };
+      return { ...prev, [normalizedId]: arr };
     });
   };
 
   /* ---------------------- Group Subscription ---------------------- */
-  const _subscribeToGroup = (groupId) => {
+  const ensureGroupSubscription = (groupId) => {
+    const normalizedId = normalizeGroupId(groupId);
+    if (!normalizedId) return;
+
     const client = stompRef.current;
     if (!client || !client.connected) {
-      subQueueRef.current.add(groupId);
+      subQueueRef.current.add(normalizedId);
       return;
     }
-    if (subscriptionsRef.current[groupId]) return;
 
-    console.log(`[chat] 🔹 Subscribing to /topic/group.${groupId}`);
-    const sub = client.subscribe(`/topic/group.${groupId}`, (msg) => {
+    const existing = subscriptionsRef.current.get(normalizedId);
+    if (existing?.groupSub && existing?.chatSub) {
+      return;
+    }
+
+    console.log(`[chat] 🔹 Subscribing to /topic/group.${normalizedId}`);
+    const groupSub = client.subscribe(`/topic/group.${normalizedId}`, (msg) => {
       try {
-        const payload = JSON.parse(msg.body); // ✅ define payload FIRST
-        handleIncoming(payload, String(groupId)); // Pass groupId from topic
+        const payload = JSON.parse(msg.body);
+        handleIncoming(payload, String(normalizedId));
       } catch (err) {
         console.error("[chat] Invalid message payload", err);
       }
     });
 
-    subscriptionsRef.current[groupId] = sub;
-
-    // Also subscribe to new chat topic for status payloads
-    console.log(`[chat] 🔹 Subscribing to /topic/chat.${groupId}`);
-    const sub2 = client.subscribe(`/topic/chat.${groupId}`, (msg) => {
+    console.log(`[chat] 🔹 Subscribing to /topic/chat.${normalizedId}`);
+    const chatSub = client.subscribe(`/topic/chat.${normalizedId}`, (msg) => {
       try {
         const payload = JSON.parse(msg.body);
-        handleIncoming(payload, String(groupId)); // Pass groupId from topic
+        handleIncoming(payload, String(normalizedId));
       } catch (err) {
         console.error("[chat] Invalid message payload (chat)", err);
       }
     });
-    subscriptionsRef.current[`${groupId}::chat`] = sub2;
+
+    subscriptionsRef.current.set(normalizedId, { groupSub, chatSub });
+    subQueueRef.current.delete(normalizedId);
   };
 
-  const unsubscribeGroup = (groupId) => {
-    const sub = subscriptionsRef.current[groupId];
-    if (sub) sub.unsubscribe?.();
-    delete subscriptionsRef.current[groupId];
-    subQueueRef.current.delete(groupId);
-    if (activeGroup === groupId) setActiveGroup(null);
-    console.log("[chat] 🔹 Unsubscribed from", groupId);
+  const _subscribeToGroup = (groupId, options = {}) => {
+    const { ensureOnly = false } = options;
+    const normalizedId = normalizeGroupId(groupId);
+    if (!normalizedId) return;
+
+    if (!ensureOnly) {
+      const currentCount = subscriptionCountsRef.current.get(normalizedId) || 0;
+      subscriptionCountsRef.current.set(normalizedId, currentCount + 1);
+    }
+
+    ensureGroupSubscription(normalizedId);
+  };
+
+  const unsubscribeGroup = (groupId, options = {}) => {
+    const { force = false } = options;
+    const normalizedId = normalizeGroupId(groupId);
+    if (!normalizedId) return;
+
+    const currentCount = subscriptionCountsRef.current.get(normalizedId) || 0;
+    const nextCount = force ? 0 : Math.max(currentCount - 1, 0);
+
+    if (nextCount === 0) {
+      const subs = subscriptionsRef.current.get(normalizedId);
+      subs?.groupSub?.unsubscribe?.();
+      subs?.chatSub?.unsubscribe?.();
+      subscriptionsRef.current.delete(normalizedId);
+      subscriptionCountsRef.current.delete(normalizedId);
+      subQueueRef.current.delete(normalizedId);
+      if (activeGroupRef.current === normalizedId) {
+        activeGroupRef.current = null;
+        setActiveGroup(null);
+      }
+      console.log("[chat] 🔹 Unsubscribed from", normalizedId);
+    } else {
+      subscriptionCountsRef.current.set(normalizedId, nextCount);
+      console.log("[chat] ℹ️ Subscription retained for", normalizedId, `(listeners: ${nextCount})`);
+    }
   };
 
   /* ---------------------- Message Handling ---------------------- */
@@ -222,31 +296,31 @@ export const ChatProvider = ({ children }) => {
       return;
     }
 
-// helper to update status in a single place
-  const updateMessageStatus = (messageId, deliveredBy = [], readBy = [], totalRecipients, statusType) => {
-    setMessages((prev) => {
-      const arr = Array.isArray(prev[groupId]) ? [...prev[groupId]] : [];
-      const updated = arr.map((m) => {
-        if (String(m.id) === String(messageId)) {
-          const isOwn = String(m.senderId) === String(user?.id || localStorage.getItem("userId"));
-          const delivered = Array.isArray(deliveredBy) ? deliveredBy : m.deliveredBy || [];
-          const readArr = Array.isArray(readBy) ? readBy : m.readBy || [];
-          const total = Number.isInteger(totalRecipients) ? totalRecipients : m.totalRecipients || 1;
+    // Helper to update message status in a single place
+    const updateMessageStatus = (messageId, deliveredBy = [], readBy = [], totalRecipients) => {
+      setMessages((prev) => {
+        const arr = Array.isArray(prev[groupId]) ? [...prev[groupId]] : [];
+        const updated = arr.map((m) => {
+          if (String(m.id) === String(messageId)) {
+            const isOwn = String(m.senderId) === String(user?.id || localStorage.getItem("userId"));
+            const delivered = Array.isArray(deliveredBy) ? deliveredBy : m.deliveredBy || [];
+            const readArr = Array.isArray(readBy) ? readBy : m.readBy || [];
+            const total = Number.isInteger(totalRecipients) ? totalRecipients : m.totalRecipients || 1;
 
-          let status = m.status;
-          if (isOwn) {
-            if ((readArr?.length || 0) >= total) status = "read";
-            else if ((delivered?.length || 0) >= total) status = "delivered";
-            else status = "sent";
+            let status = m.status;
+            if (isOwn) {
+              if ((readArr?.length || 0) >= total) status = "read";
+              else if ((delivered?.length || 0) >= total) status = "delivered";
+              else status = "sent";
+            }
+
+            return { ...m, deliveredBy: delivered, readBy: readArr, totalRecipients: total, status };
           }
-
-          return { ...m, deliveredBy: delivered, readBy: readArr, totalRecipients: total, status };
-        }
-        return m;
+          return m;
+        });
+        return { ...prev, [groupId]: updated };
       });
-      return { ...prev, [groupId]: updated };
-    });
-  };
+    };
 
     switch (type) {
 /* ---------- DELIVERY OR READ RECEIPTS ---------- */
@@ -254,9 +328,9 @@ export const ChatProvider = ({ children }) => {
     case "delivered":
     case "read_receipt": {
       const content = payload.message || payload.content || payload;
-      const { messageId, deliveredBy, readBy, totalRecipients, statusType } = content || {};
+      const { messageId, deliveredBy, readBy, totalRecipients } = content || {};
       if (!messageId) return;
-      updateMessageStatus(messageId, deliveredBy, readBy, totalRecipients, statusType);
+      updateMessageStatus(messageId, deliveredBy, readBy, totalRecipients);
       break;
     }
 
@@ -332,79 +406,6 @@ export const ChatProvider = ({ children }) => {
             });
           }
         }
-        break;
-      }
-      case "delivered": {
-        const upd = payload.message || payload.content || payload;
-        const { messageId, deliveredBy, readBy, totalRecipients } = upd;
-        if (!messageId) return;
-        setMessages((prev) => {
-          const arr = Array.isArray(prev[groupId]) ? [...prev[groupId]] : [];
-          const updated = arr.map((m) => {
-            if (String(m.id) === String(messageId)) {
-              const isOwn = String(m.senderId) === String(user?.id || localStorage.getItem("userId"));
-              const delivered = Array.isArray(deliveredBy) ? deliveredBy : (Array.isArray(m.deliveredBy) ? m.deliveredBy : []);
-              const readArr = Array.isArray(readBy) ? readBy : (Array.isArray(m.readBy) ? m.readBy : []);
-              const total = Number.isInteger(totalRecipients) ? totalRecipients : m.totalRecipients;
-              let status = m.status;
-              if (isOwn && total != null) {
-                if ((readArr?.length || 0) >= total) status = "read";
-                else if ((delivered?.length || 0) >= total) status = "delivered";
-                else status = "sent";
-              }
-              return { ...m, deliveredBy: delivered, readBy: readArr, totalRecipients: total, status };
-            }
-            return m;
-          });
-          return { ...prev, [groupId]: updated };
-        });
-        break;
-      }
-
-      case "read_receipt": {
-        const upd = payload.message || payload.content || payload;
-        const { messageId, deliveredBy, readBy, totalRecipients } = upd;
-        if (!messageId) return;
-        setMessages((prev) => {
-          const arr = Array.isArray(prev[groupId]) ? [...prev[groupId]] : [];
-          const updated = arr.map((m) => {
-            if (String(m.id) === String(messageId)) {
-              const isOwn = String(m.senderId) === String(user?.id || localStorage.getItem("userId"));
-              const delivered = Array.isArray(deliveredBy) ? deliveredBy : (Array.isArray(m.deliveredBy) ? m.deliveredBy : []);
-              const readArr = Array.isArray(readBy) ? readBy : (Array.isArray(m.readBy) ? m.readBy : []);
-              const total = Number.isInteger(totalRecipients) ? totalRecipients : m.totalRecipients;
-              let status = m.status;
-              if (isOwn && total != null) {
-                if ((readArr?.length || 0) >= total) status = "read";
-                else if ((delivered?.length || 0) >= total) status = "delivered";
-                else status = "sent";
-              }
-              return { ...m, deliveredBy: delivered, readBy: readArr, totalRecipients: total, status };
-            }
-            return m;
-          });
-          return { ...prev, [groupId]: updated };
-        });
-        break;
-      }
-
-      case "typing": {
-        const tUser = payload.message || payload;
-        if (!tUser?.userId || tUser.userId === user?.id) return;
-
-        const normalizedUser = {
-          userId: String(tUser.userId),
-          userName: tUser.userName || tUser.username || tUser.name || "Someone",
-        };
-
-        setTypingUsers((prev) => {
-          const existing = prev[groupId] || [];
-          const updated = [
-            ...existing.filter((u) => u.userId !== normalizedUser.userId),
-            normalizedUser,
-          ];
-          return { ...prev, [groupId]: updated };
-        });
         break;
       }
 
@@ -600,6 +601,37 @@ case "file": {
   break;
 }
 
+case "session": {
+  // Handle session events (created, voted, finalized, rsvp, deleted)
+  const sessionData = payload.session || payload;
+  if (!sessionData || !sessionData.groupId) return;
+
+  // Dispatch custom event for session updates
+  try {
+    const event = new CustomEvent("session:update", {
+      detail: { 
+        action: payload.action || "created",
+        groupId: sessionData.groupId || groupId,
+        session: sessionData 
+      },
+    });
+    window.dispatchEvent(event);
+  } catch (e) {
+    console.error("Error dispatching session update event:", e);
+  }
+
+  // Also show browser notification for reminders
+  if (payload.action === "reminder" || payload.type === "session_reminder") {
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification(sessionData.title || "Session Reminder", {
+        body: `Session starts in ${payload.minutesBefore || 0} minutes`,
+        icon: "/favicon.ico",
+      });
+    }
+  }
+  break;
+}
+
       case "presence":
         setOnlineUsers((prev) => ({
           ...prev,
@@ -629,18 +661,20 @@ case "file": {
   };
 
   const handleLocalMessageStatus = (message) => {
-  // Initialize ticks locally as "sent"
-  message.deliveredBy = [user.id]; // mark sender as delivered
-  message.readBy = []; // sender never counts as reader
-  message.totalRecipients = message.totalRecipients || (message.members?.length || 1);
+    // Initialize ticks locally as "sent"
+    message.deliveredBy = [user.id]; // mark sender as delivered
+    message.readBy = []; // sender never counts as reader
+    message.totalRecipients =
+      message.totalRecipients || (message.members?.length || 1);
 
-  // Optimistically update UI so tick shows instantly
-  setMessages((prev) => ({
-  ...prev,
-  [message.groupId]: [...(prev[message.groupId] || []), message],
-}));
-
-};
+    // Optimistically update UI so tick shows instantly
+    const normalizedId = normalizeGroupId(message.groupId);
+    if (!normalizedId) return;
+    setMessages((prev) => ({
+      ...prev,
+      [normalizedId]: [...(prev[normalizedId] || []), message],
+    }));
+  };
 
 
   /* ---------------------- Send Message ---------------------- */
@@ -793,21 +827,47 @@ const votePoll = (groupId, messageId, pollId, optionIds) => {
 
 
   /* ---------------------- Getters ---------------------- */
-  const getGroupMessages = (groupId) => messages[groupId] || [];
-  const getTypingUsers = (groupId) => typingUsers[groupId] || [];
-  const getOnlineUsers = (groupId) => onlineUsers[groupId] || [];
-  const getUnreadCount = (groupId) => unreadCount[groupId] || 0;
-
-  const openGroup = (groupId) => {
-    if (!groupId) return;
-    if (activeGroup && activeGroup !== groupId) unsubscribeGroup(activeGroup);
-    setActiveGroup(groupId);
-    _subscribeToGroup(groupId);
-    setUnreadCount((prev) => ({ ...prev, [groupId]: 0 }));
+  const getGroupMessages = (groupId) => {
+    const normalizedId = normalizeGroupId(groupId);
+    if (!normalizedId) return [];
+    return messages[normalizedId] || [];
+  };
+  const getTypingUsers = (groupId) => {
+    const normalizedId = normalizeGroupId(groupId);
+    if (!normalizedId) return [];
+    return typingUsers[normalizedId] || [];
+  };
+  const getOnlineUsers = (groupId) => {
+    const normalizedId = normalizeGroupId(groupId);
+    if (!normalizedId) return [];
+    return onlineUsers[normalizedId] || [];
+  };
+  const getUnreadCount = (groupId) => {
+    const normalizedId = normalizeGroupId(groupId);
+    if (!normalizedId) return 0;
+    return unreadCount[normalizedId] || 0;
   };
 
-  const markAsRead = (groupId) =>
-    setUnreadCount((prev) => ({ ...prev, [groupId]: 0 }));
+  const openGroup = (groupId) => {
+    const normalizedId = normalizeGroupId(groupId);
+    if (!normalizedId) return;
+
+    const previousActive = activeGroupRef.current;
+    if (previousActive && previousActive !== normalizedId) {
+      unsubscribeGroup(previousActive);
+    }
+
+    activeGroupRef.current = normalizedId;
+    setActiveGroup(normalizedId);
+    _subscribeToGroup(normalizedId);
+    setUnreadCount((prev) => ({ ...prev, [normalizedId]: 0 }));
+  };
+
+  const markAsRead = (groupId) => {
+    const normalizedId = normalizeGroupId(groupId);
+    if (!normalizedId) return;
+    setUnreadCount((prev) => ({ ...prev, [normalizedId]: 0 }));
+  };
 
   /* ---------------------- Context Value ---------------------- */
   const value = {
@@ -832,7 +892,6 @@ const votePoll = (groupId, messageId, pollId, optionIds) => {
     typingUsers,
     onlineUsers,
     unreadCount,
-    votePoll,
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;

@@ -12,9 +12,10 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(unique = true,name = "course_code")
     private String courseCode;
 
+    @Column(name = "course_name")
     private String courseName;
     private String description;
 	public Long getId() {

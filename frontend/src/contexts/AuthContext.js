@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
 
   // TODO: Backend Integration - API Configuration
   // Spring Boot backend URL - move to environment variables
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
+  const API_BASE_URL = 'http://localhost:8080';
 
   // TODO: Backend Integration - Logout
   // API Endpoint: POST /api/auth/logout
@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('userEmail');
     localStorage.removeItem('userId');
     localStorage.removeItem('EnrolledCourses')
+    localStorage.clear();
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
   };
@@ -56,6 +57,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     setupUserFromToken();
     setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Login user

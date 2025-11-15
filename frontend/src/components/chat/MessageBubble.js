@@ -10,7 +10,7 @@ import {
 import PollDisplay from './PollDisplay';
 import { useAuth } from '../../contexts/AuthContext';
 
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8080/api";
+const API_BASE ="http://localhost:8080/api";
 
 const MessageBubble = ({ message, onReply, onReaction, onPollVote }) => {
   const { user } = useAuth();
