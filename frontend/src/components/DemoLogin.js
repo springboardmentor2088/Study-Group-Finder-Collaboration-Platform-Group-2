@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -35,7 +36,7 @@ const DemoLogin = () => {
     setLoading(false);
   };
 
-  const useDemoAccount = (demo) => {
+  const handleDemoAccountClick = (demo) => {
     setEmail(demo.email);
     setPassword(demo.password);
   };
@@ -108,7 +109,7 @@ const DemoLogin = () => {
             {demoCredentials.map((demo, index) => (
               <button
                 key={index}
-                onClick={() => useDemoAccount(demo)}
+                onClick={() => handleDemoAccountClick(demo)}
                 className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-dark-border shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-white bg-white dark:bg-dark-input hover:bg-gray-50 dark:hover:bg-dark-hover"
               >
                 {demo.role} Account
@@ -122,3 +123,4 @@ const DemoLogin = () => {
 };
 
 export default DemoLogin;
+// >>>>>>> Incoming (Background Agent changes)

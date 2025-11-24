@@ -289,7 +289,6 @@ import axios from 'axios';
 import { PlusIcon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 const API_BASE_URL = "http://localhost:8080/courses"; 
-const USER_ID = localStorage.getItem("userId"); // 🔹 Replace with logged-in userId (from auth/JWT later)
 
 const CourseManager = () => {
   const [availableCourses, setAvailableCourses] = useState([]);
@@ -297,6 +296,13 @@ const CourseManager = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const [user, setUser] = useState(null);
+  const [stats, setStats] = useState({
+    enrolledCourses: 0,
+    studyGroups: 0,
+    suggestedPeers: 0
+  });
 
 
   const loadDashboardStats = async () => {
@@ -336,8 +342,14 @@ const CourseManager = () => {
 
   // Load enrolled courses
   const loadEnrolledCourses = async () => {
+    const USER_ID = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
     try {
-      const response = await axios.get(`${API_BASE_URL}/enrolled/${USER_ID}`);
+      const response = await axios.get(`${API_BASE_URL}/enrolled/${USER_ID}`,{
+      headers: {
+        Authorization: `Bearer ${token}`, // send token to backend
+      },
+    });
       setEnrolledCourses(response.data);
     } catch (error) {
       console.error('Error loading enrolled courses:', error);
@@ -348,10 +360,12 @@ const CourseManager = () => {
   useEffect(() => {
     loadCourses();
     loadEnrolledCourses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Enroll in course
   const enrollInCourse = async (course) => {
+    const USER_ID = localStorage.getItem("userId");
     setLoading(true);
     try {
       await axios.post(`${API_BASE_URL}/enroll/${USER_ID}/${course.courseCode}`);
@@ -366,6 +380,7 @@ const CourseManager = () => {
 
   // Unenroll from course
   const unenrollFromCourse = async (course) => {
+    const USER_ID = localStorage.getItem("userId");
     setLoading(true);
     try {
       await axios.delete(`${API_BASE_URL}/remove/${USER_ID}/${course.courseCode}`);
